@@ -13,15 +13,16 @@ class Visitor < ActiveRecord::Base
     visitor_list.each do |entry|
       visitor = Visitor.find_or_create_by({mac_id: entry["macAddress"]})
       location_id = Location.get_location(entry["MapCoordinate"])
+      start_time = entry["Statistics"]["lastLocatedTime"]
       if visitor.at_location == 0 && location_id != 0
-        Visit.create({visitor_id: visitor.id, location_id: location_id, start: entry["Statistics"]["lastLocatedTime"]})
+        Visit.create({visitor_id: visitor.id, location_id: location_id, start: start_time})
         visitor.update({at_location: location_id})
       elsif visitor.at_location != location_id && location_id != 0
-        visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
+        visitor.visits.last.update({end: start_time})
         visitor.update({at_location: location_id})
-        Visit.create({visitor_id: visitor.id, location_id: location_id, start: entry["Statistics"]["lastLocatedTime"]})
+        Visit.create({visitor_id: visitor.id, location_id: location_id, start: start_time})
       elsif visitor.at_location != location_id && location_id == 0
-        visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
+        visitor.visits.last.update({end: start_time})
         visitor.update({at_location: location_id})
       end
     end
@@ -31,7 +32,7 @@ class Visitor < ActiveRecord::Base
     current_visitors = Visitor.where.not(at_location:0)
     current_visitors.each do |visitor|
       if !is_present(visitor,visitor_list)
-        visitor.visits.last.update({end: DateTime.now})
+        visitor.visits.last.update({end: visitor_list.first["currentServerTime"]})
       end
     end
   end
