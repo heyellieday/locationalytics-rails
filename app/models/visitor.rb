@@ -33,6 +33,7 @@ class Visitor < ActiveRecord::Base
     current_visitors.each do |visitor|
       if !is_present(visitor,visitor_list)
         visitor.visits.last.update({end: visitor_list.first["currentServerTime"]})
+        visitor.update({at_location: 0})
       end
     end
   end
