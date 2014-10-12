@@ -2,10 +2,11 @@ Rails.application.routes.draw do
 
   resources :visitors, defaults: { format: 'js' }, only: [:index, :create, :update, :destroy, :show]
   get 'store/:store_id/duration' => 'visitors#length_by_store', defaults: {format: 'js'}
-  get 'store/:store_id/count' => 'visitors#people_count_by_store', defaulst: {format: 'js'}
+  get 'store/:store_id/count' => 'visitors#people_count_by_store', defaults: {format: 'js'}
   get 'store/:store_id/current_count' => 'visitors#current_count_by_store', defaults: {format: 'js'}
   get 'visitor/first_time' => 'visitors#first_time', defaults: {format: 'js'}
   get 'visitor/all_duration' => 'visitors#all_lengths', defaults: {format: 'js'}
+  get 'visitor/update_db' => 'visitors#update_db'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

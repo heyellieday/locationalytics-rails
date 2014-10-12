@@ -4,10 +4,10 @@ class VisitorsController < ApplicationController
   	params.permit(:callback)
   	if params[:callback]
   		respond_to do |format|
-	  		format.js { render json: {visitors: Visitor.response}, :callback => params[:callback] }
+	  		format.js { render json: {visitors: Visitor.all}, :callback => params[:callback] }
 	  	end
   	else
-  		render json: {visitors: Visitor.response}
+  		render json: {visitors: Visitor.all}
   	end
   end
 
@@ -44,7 +44,7 @@ class VisitorsController < ApplicationController
   	if params[:callback]
   		respond_to do |format|
   			#format.html { render json: {stories: Story.all}}
-	  		format.js { render json: Visit.where.not(length:nil, location:store_id).order("end_time DESC") , location: store_id, :callback => params[:callback] }
+	  		format.js { render json: Visit.where.not(length:nil, location:store_id).order("end_time DESC"), :callback => params[:callback] }
 	  	end
 	else
 		render json: Visit.where.not(length:nil, location:store_id).order("end_time DESC")
@@ -76,10 +76,7 @@ end
 end
 
  
-  def update
-  	# This is where we would make the api call to the API which on initial time, 
-  	# would populate the database with the current data.
-  	# We will set a cron job using the whenever job to submit a patch request every X minutes
-  	# In addition, the client can possibliy submit a request to get the most up to date info
+  def update_db
+  	render json: Visitor.response
   end
 end
