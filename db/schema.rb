@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20141011232708) do
 
   create_table "visitors", force: true do |t|
     t.string   "mac_id"
-    t.integer  "at_location"
+    t.integer  "at_location", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

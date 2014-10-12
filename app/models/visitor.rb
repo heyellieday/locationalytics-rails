@@ -18,6 +18,7 @@ class Visitor < ActiveRecord::Base
         visitor.update({at_location: location_id})
       elsif visitor.at_location != location_id && location_id != 0
         visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
+        visitor.update({at_location: location_id})
         Visit.create({visitor_id: visitor.id, location_id: location_id, start: entry["Statistics"]["lastLocatedTime"]})
       elsif visitor.at_location != location_id && location_id == 0
         visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
