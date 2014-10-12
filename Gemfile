@@ -41,6 +41,7 @@ gem 'spring',        group: :development
 gem 'whenever', :require => false
 
 gem 'pg'
+gem 'rest_client'
 
 
 gem 'rack-cors',
