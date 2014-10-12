@@ -42,6 +42,7 @@ gem 'whenever', :require => false
 
 gem 'pg'
 gem 'rest_client'
+gem 'json'
 
 
 gem 'rack-cors',
