@@ -4,11 +4,10 @@ class VisitorsController < ApplicationController
   	params.permit(:callback)
   	if params[:callback]
   		respond_to do |format|
-  			#format.html { render json: {stories: Story.all}}
-	  		format.js { render json: {stories: Visitor.paginate(page: params[:pagination], :per_page => 3)}, :callback => params[:callback] }
+	  		format.js { render json: {visitors: Visitor.response}, :callback => params[:callback] }
 	  	end
   	else
-  		render json: {stories: Visitor.all}
+  		render json: {visitors: Visitor.response}
   	end
   end
 

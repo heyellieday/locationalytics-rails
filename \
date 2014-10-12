@@ -1,15 +1,17 @@
 class Visitor < ActiveRecord::Base
   has_many :visits
   has_many :locations, through: :visits
+  attr_accessor :visitor_list
+
 
   def self.response
     response = RestClient.get 'https://10.10.20.11/api/contextaware/v1/location/clients', {params: {floor: "Main Floor"}, accept: :json, authorization: 'Basic bGVhcm5pbmc6bGVhcm5pbmc=' }
-    visitor_list = JSON.parse(response)["Locations"]["entries"]
-    parser(visitor_list)
-    check_present(visitor_list)
+    self.visitor_list = JSON.parse(response)["Locations"]["entries"]
+    parser
+    check_present
   end
 
-  def self.parser(visitor_list)
+  def self.parser
     visitor_list.each do |entry|
       visitor = Visitor.find_or_create_by({mac_id: entry["macAddress"]})
       location_id = Location.get_location(entry["MapCoordinate"])
@@ -17,26 +19,25 @@ class Visitor < ActiveRecord::Base
         Visit.create({visitor_id: visitor.id, location_id: location_id, start: entry["Statistics"]["lastLocatedTime"]})
         visitor.update({at_location: location_id})
       elsif visitor.at_location != location_id && location_id != 0
-        visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
-        visitor.update({at_location: location_id})
+        visitor.visit.last.update({end: entry["Statistics"]["lastLocatedTime"]})
         Visit.create({visitor_id: visitor.id, location_id: location_id, start: entry["Statistics"]["lastLocatedTime"]})
       elsif visitor.at_location != location_id && location_id == 0
-        visitor.visits.last.update({end: entry["Statistics"]["lastLocatedTime"]})
+        visitor.visit.last.update({end: entry["Statistics"]["lastLocatedTime"]})
         visitor.update({at_location: location_id})
       end
     end
   end
 
-  def self.check_present(visitor_list)
+  def self.check_present
     current_visitors = Visitor.where.not(at_location:0)
     current_visitors.each do |visitor|
-      if !is_present(visitor,visitor_list)
+      if !is_present(visitor)
         visitor.visits.last.update({end: DateTime.now})
       end
     end
   end
 
-  def self.is_present(visitor,visitor_list)
+  def self.is_present(visitor)
     visitor_list.each do |visit|
       if visit["macAddress"] == visitor.mac_id
         return true
