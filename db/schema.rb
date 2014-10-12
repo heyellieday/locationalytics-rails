@@ -34,8 +34,8 @@ ActiveRecord::Schema.define(version: 20141011232708) do
 
   create_table "visits", force: true do |t|
     t.integer  "visitor_id"
-    t.datetime "start"
-    t.datetime "end"
+    t.datetime "start_time"
+    t.datetime "end_time"
     t.integer  "length"
     t.integer  "location_id"
     t.datetime "created_at"
